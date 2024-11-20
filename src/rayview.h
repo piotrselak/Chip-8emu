@@ -3,11 +3,11 @@
 
 // TODO rethink if needed here?
 // Wrapper for all the rendering code
-class Renderer {
+class RayView {
 public:
     constexpr static int SCALE = 10;
 
-    Renderer(int width, int height) {
+    RayView(int width, int height) {
         InitWindow(width * SCALE, height * SCALE, "CHIP-8emu");
         SetTargetFPS(60);
     }
@@ -33,7 +33,7 @@ public:
         return WindowShouldClose();
     }
 
-    ~Renderer() {
+    ~RayView() {
         CloseWindow();
     }
 };

@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "chip8.h"
-#include "renderer.h"
+#include "rayview.h"
 
 std::vector<char> load_program_to_buffer(const char *path) {
     std::ifstream file(path, std::ios::binary);
@@ -48,12 +48,12 @@ int main(int argc, char *argv[]) {
     chip8.execute(code);
 
     // // TODO maybe not renderer but all peripherals?
-    Renderer renderer(64, 32);
+    RayView view(64, 32);
     auto last_display = chip8.get_display();
 
-    while (!renderer.should_end()) {
+    while (!view.should_end()) {
         if (auto new_display = chip8.get_display(); new_display != last_display)
-            renderer.draw(new_display);
+            view.draw(new_display);
         const auto opcode = chip8.fetch();
         chip8.execute(opcode);
     }

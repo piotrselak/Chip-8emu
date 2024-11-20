@@ -23,6 +23,8 @@ endif ()
 
 add_executable(Chip_8emu src/main.cpp
         src/chip8.h
-        src/renderer.h)
+        src/rayview.h
+        src/chip8.cpp
+        src/view.h)
 
 target_link_libraries(${PROJECT_NAME} raylib)
