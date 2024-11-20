@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <stack>
 
 class Chip8 {
 public:
@@ -20,8 +21,8 @@ private:
     unsigned short int memory[4096] = {};
     unsigned short int pc = 0;
     unsigned short int i = 0;
-    uint8_t registers[16] = {};
-    // TODO: stack here
+    uint8_t v[16] = {};
+    std::stack<unsigned short int> stack;
     uint8_t delay_timer = 0;
     uint8_t sound_timer = 0;
 };
