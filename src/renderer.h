@@ -5,19 +5,23 @@
 // Wrapper for all the rendering code
 class Renderer {
 public:
+    constexpr static int SCALE = 10;
+
     Renderer(int width, int height) {
-        InitWindow(width, height, "CHIP-8emu");
+        InitWindow(width * SCALE, height * SCALE, "CHIP-8emu");
         SetTargetFPS(60);
     }
 
-    void draw(const std::array<std::array<uint8_t, 8>, 32> &display) {
+    void draw(const std::array<std::array<bool, 64>, 32> &display) {
         BeginDrawing();
+        // TODO maybe not clear everything if something didn't change? idk if worth it
         ClearBackground(RAYWHITE);
 
         for (int y = 0; y < 32; y++) {
-            for (int x = 0; x < 8; x++) {
+            for (int x = 0; x < 64; x++) {
                 if (display[y][x]) {
-                    DrawRectangle(x, y, 8, 1, BLACK);
+                    // TODO maybe optimize it by blocks or something
+                    DrawRectangle(x * SCALE, y * SCALE, SCALE, SCALE, BLACK);
                 }
             }
         }
