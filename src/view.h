@@ -10,5 +10,4 @@ public:
     virtual bool should_end() = 0;
 };
 
-IView::~IView() {
-}
+inline IView::~IView() = default;

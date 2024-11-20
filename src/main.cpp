@@ -40,23 +40,11 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    Chip8 chip8;
+    std::unique_ptr<IView> view = std::make_unique<RayView>(64, 32);
+
+    Chip8 chip8(std::move(view));
     chip8.load(buffer);
-
-    auto code = chip8.fetch();
-    chip8.execute(code);
-
-    const std::unique_ptr<IView> view = std::make_unique<
-        RayView>(64, 32);
-
-    auto last_display = chip8.get_display();
-
-    while (!view->should_end()) {
-        if (auto new_display = chip8.get_display(); new_display != last_display)
-            view->draw(new_display);
-        const auto opcode = chip8.fetch();
-        chip8.execute(opcode);
-    }
+    chip8.loop();
 
     return 0;
 }

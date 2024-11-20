@@ -1,16 +1,34 @@
 #pragma once
 #include <array>
 #include <cstdint>
+#include <memory>
 #include <stack>
 #include <stdexcept>
 #include <vector>
+
+#include "view.h"
 
 class Chip8 {
 public:
     constexpr static uint16_t ROM_START = 0x200;
 
-    Chip8() {
+    explicit Chip8(std::unique_ptr<IView> view) {
         clear_screen();
+        this->view = std::move(view);
+    }
+
+    void loop() {
+        auto code = fetch();
+        execute(code);
+        auto last_display = get_display();
+
+        while (!view->should_end()) {
+            if (auto new_display = get_display();
+                new_display != last_display)
+                view->draw(new_display);
+            const auto opcode = fetch();
+            execute(opcode);
+        }
     }
 
     [[nodiscard]] std::array<std::array<bool, 64>, 32> get_display() const {
@@ -25,6 +43,8 @@ public:
 
 private:
     void clear_screen();
+
+    std::unique_ptr<IView> view;
 
     uint8_t memory[4096] = {};
     // TODO change inside array to 8 8bit uint?
