@@ -5,6 +5,25 @@
 
 #include "chip8.h"
 
+std::vector<char> load_program_to_buffer(char *path) {
+    std::ifstream file(path, std::ios::binary);
+    if (!file) {
+        throw std::runtime_error("Could not read given program.");
+    }
+
+    file.seekg(0, std::ios::end);
+    const std::streamsize file_size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    std::vector<char> buffer(file_size);
+    if (!file.read(buffer.data(), file_size)) {
+        throw std::runtime_error("Error reading file.\n");
+    }
+    file.close();
+
+    return buffer;
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         std::cerr << "Path to a program has to be given as an argument." <<
@@ -12,26 +31,17 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    std::ifstream file(argv[1], std::ios::binary);
-    if (!file) {
-        std::cerr << "Could not read given program." << std::endl;
-        return 1;
-    }
-
-    file.seekg(0, std::ios::end);
-    const std::streamsize file_size = file.tellg();
-    file.seekg(0, std::ios::beg);
 
     std::vector<char> buffer;
-    if (!file.read(buffer.data(), file_size)) {
-        std::cerr << "Error reading file.\n";
+    try {
+        buffer = load_program_to_buffer(argv[1]);
+    } catch (std::runtime_error &err) {
+        std::cerr << err.what() << std::endl;
         return 1;
     }
-    file.close();
 
     Chip8 chip8;
     chip8.load(buffer);
-
 
     return 0;
 }
