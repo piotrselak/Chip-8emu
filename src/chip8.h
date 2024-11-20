@@ -110,6 +110,10 @@ public:
             case 0xB:
                 pc = v[0] + nnn;
                 break;
+            case 0xC:
+                // TODO think about changing to random from std lib
+                v[x] = rand() & nn; // NOLINT(cert-msc30-c, cert-msc50-cpp)
+                break;
             case 0xD:
                 // TODO FIX AND TIDY
                 v[0xf] = 0;
