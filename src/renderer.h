@@ -1,6 +1,7 @@
 #pragma once
 #include "raylib.h"
 
+// TODO rethink if needed here?
 // Wrapper for all the rendering code
 class Renderer {
 public:
@@ -9,9 +10,18 @@ public:
         SetTargetFPS(60);
     }
 
-    void draw() {
+    void draw(const std::array<std::array<uint8_t, 8>, 32> &display) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
+
+        for (int y = 0; y < 32; y++) {
+            for (int x = 0; x < 8; x++) {
+                if (display[y][x]) {
+                    DrawRectangle(x, y, 8, 1, BLACK);
+                }
+            }
+        }
+
         EndDrawing();
     }
 

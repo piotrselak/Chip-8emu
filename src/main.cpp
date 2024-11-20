@@ -44,10 +44,18 @@ int main(int argc, char *argv[]) {
     Chip8 chip8;
     chip8.load(buffer);
 
+    auto code = chip8.fetch();
+    chip8.execute(code);
+
+    // // TODO maybe not renderer but all peripherals?
     Renderer renderer(64, 32);
+    auto last_display = chip8.get_display();
 
     while (!renderer.should_end()) {
-        renderer.draw(); // TODO only when some draw instruction is done
+        if (auto new_display = chip8.get_display(); new_display != last_display)
+            renderer.draw(new_display);
+        const auto opcode = chip8.fetch();
+        chip8.execute(opcode);
     }
 
     return 0;
