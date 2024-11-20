@@ -1,9 +1,10 @@
 #pragma once
 #include "raylib.h"
+#include "view.h"
 
 // TODO rethink if needed here?
 // Wrapper for all the rendering code
-class RayView {
+class RayView : public IView {
 public:
     constexpr static int SCALE = 10;
 
@@ -12,7 +13,7 @@ public:
         SetTargetFPS(60);
     }
 
-    void draw(const std::array<std::array<bool, 64>, 32> &display) {
+    void draw(const std::array<std::array<bool, 64>, 32> &display) override {
         BeginDrawing();
         // TODO maybe not clear everything if something didn't change? idk if worth it
         ClearBackground(RAYWHITE);
@@ -29,11 +30,11 @@ public:
         EndDrawing();
     }
 
-    bool should_end() {
+    bool should_end() override {
         return WindowShouldClose();
     }
 
-    ~RayView() {
+    ~RayView() override {
         CloseWindow();
     }
 };

@@ -32,7 +32,6 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-
     std::vector<char> buffer;
     try {
         buffer = load_program_to_buffer(argv[1]);
@@ -47,13 +46,14 @@ int main(int argc, char *argv[]) {
     auto code = chip8.fetch();
     chip8.execute(code);
 
-    // // TODO maybe not renderer but all peripherals?
-    RayView view(64, 32);
+    const std::unique_ptr<IView> view = std::make_unique<
+        RayView>(64, 32);
+
     auto last_display = chip8.get_display();
 
-    while (!view.should_end()) {
+    while (!view->should_end()) {
         if (auto new_display = chip8.get_display(); new_display != last_display)
-            view.draw(new_display);
+            view->draw(new_display);
         const auto opcode = chip8.fetch();
         chip8.execute(opcode);
     }
