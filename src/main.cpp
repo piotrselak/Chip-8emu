@@ -4,8 +4,9 @@
 #include <vector>
 
 #include "chip8.h"
+#include "renderer.h"
 
-std::vector<char> load_program_to_buffer(char *path) {
+std::vector<char> load_program_to_buffer(const char *path) {
     std::ifstream file(path, std::ios::binary);
     if (!file) {
         throw std::runtime_error("Could not read given program.");
@@ -42,6 +43,12 @@ int main(int argc, char *argv[]) {
 
     Chip8 chip8;
     chip8.load(buffer);
+
+    Renderer renderer(64, 32);
+
+    while (!renderer.should_end()) {
+        renderer.draw(); // TODO only when some draw instruction is done
+    }
 
     return 0;
 }

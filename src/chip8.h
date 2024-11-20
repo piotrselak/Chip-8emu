@@ -19,6 +19,7 @@ public:
 
 private:
     unsigned short int memory[4096] = {};
+    bool display[32][64] = {}; // TODO?
     unsigned short int pc = 0;
     unsigned short int i = 0;
     uint8_t v[16] = {};
