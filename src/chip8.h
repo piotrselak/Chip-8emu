@@ -38,7 +38,10 @@ public:
     void execute(const uint16_t opcode) {
         const uint8_t x = opcode >> 8 & 0xF;
         const uint8_t y = opcode >> 4 & 0xF;
+        const uint8_t nn = opcode & 0xFF;
+        const uint8_t n = opcode & 0xF;
 
+        // TODO maybe tidy and move it somewhere else if needed
         switch (uint8_t first_nible = opcode >> 12) {
             case 0x0:
                 clear_screen();
@@ -46,25 +49,19 @@ public:
             case 0x1:
                 pc = opcode & 0xFFF;
                 break;
-            case 0x6: {
-                const uint8_t nn = opcode & 0xFF;
+            case 0x6:
                 v[x] = nn;
                 break;
-            }
-            case 0x7: {
-                const uint8_t nn = opcode & 0xFF;
+            case 0x7:
                 v[x] += nn;
                 break;
-            }
             case 0xA:
                 i = opcode & 0xFFF;
                 break;
-            case 0xD: {
+            case 0xD:
                 // TODO FIX AND TIDY
-                const uint8_t n = opcode & 0xF;
-
                 v[0xf] = 0;
-                // TODO MODULO and xors and stop when out of bounds
+            // TODO xors and stop when out of bounds?
                 for (auto nth = 0; nth < n; nth++) {
                     auto sprite_byte = memory[i + nth];
                     for (int xline = 0; xline < 8; xline++) {
@@ -80,9 +77,7 @@ public:
                         }
                     }
                 }
-                // TODO VF flag
                 break;
-            }
             default:
                 throw std::runtime_error("Unknown opcode.");
         }
