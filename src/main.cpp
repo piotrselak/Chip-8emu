@@ -25,7 +25,7 @@ std::vector<char> load_program_to_buffer(const char *path) {
     return buffer;
 }
 
-int main(int argc, char *argv[]) {
+int main(const int argc, char *argv[]) {
     if (argc != 2) {
         std::cerr << "Path to a program has to be given as an argument." <<
                 std::endl;

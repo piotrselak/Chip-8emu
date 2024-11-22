@@ -124,11 +124,11 @@ void Chip8::execute(const uint16_t opcode) {
             v[0xf] = 0;
         // TODO xors and stop when out of bounds?
             for (auto nth = 0; nth < n; nth++) {
-                auto sprite_byte = memory[i + nth];
+                const auto sprite_byte = memory[i + nth];
                 for (int xline = 0; xline < 8; xline++) {
-                    auto curr_pixel = sprite_byte >> (7 - xline) & 0x1;
-                    auto x_cord = v[x] % 64 + xline;
-                    auto y_cord = v[y] % 32 + nth;
+                    const auto curr_pixel = sprite_byte >> (7 - xline) & 0x1;
+                    const auto x_cord = v[x] % 64 + xline;
+                    const auto y_cord = v[y] % 32 + nth;
 
                     if (curr_pixel & display[y_cord][x_cord]) {
                         v[0xf] = true;
