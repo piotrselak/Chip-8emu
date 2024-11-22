@@ -42,12 +42,12 @@ void Chip8::execute(const uint16_t opcode) {
     switch (uint8_t first_nible = opcode >> 12) {
         case 0x0:
             if (nnn == 0x0EE)
-                Return(context).execute();
+                Return(pc, stack).execute();
             else if (nnn == 0x0E0)
-                ClearScreen(context).execute();
+                ClearScreen(display).execute();
             break;
         case 0x1:
-            Jump(context, nnn).execute();
+            Jump(pc, nnn).execute();
             break;
         case 0x2:
             stack.push(pc);
