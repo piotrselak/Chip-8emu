@@ -25,6 +25,9 @@ add_executable(Chip_8emu src/main.cpp
         src/chip8.h
         src/rayview.h
         src/chip8.cpp
-        src/view.h)
+        src/view.h
+        src/command.h
+        src/context.h
+)
 
 target_link_libraries(${PROJECT_NAME} raylib)

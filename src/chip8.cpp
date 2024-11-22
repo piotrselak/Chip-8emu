@@ -22,13 +22,8 @@ uint16_t Chip8::fetch() {
     return opcode;
 }
 
-void Chip8::clear_screen() {
-    for (auto &row: display) {
-        for (auto &col: row) {
-            col = false;
-        }
-    }
-}
+// std::unique_ptr<Command> Chip8::decode(uint16_t opcode) {
+// }
 
 void Chip8::execute(const uint16_t opcode) {
     //TODO idk might be responsible for bugs
@@ -46,16 +41,13 @@ void Chip8::execute(const uint16_t opcode) {
     // TODO maybe tidy and move it somewhere else if needed
     switch (uint8_t first_nible = opcode >> 12) {
         case 0x0:
-            if (nnn == 0x0EE) {
-                if (stack.empty())
-                    throw std::runtime_error("Can't pop from empty stack.");
-                pc = stack.top();
-                stack.pop();
-            } else if (nnn == 0x0E0)
-                clear_screen();
+            if (nnn == 0x0EE)
+                Return(context).execute();
+            else if (nnn == 0x0E0)
+                ClearScreen(context).execute();
             break;
         case 0x1:
-            pc = nnn;
+            Jump(context, nnn).execute();
             break;
         case 0x2:
             stack.push(pc);

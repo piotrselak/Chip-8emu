@@ -13,7 +13,7 @@ public:
         SetTargetFPS(60); // TODO
     }
 
-    void draw(const std::array<std::array<bool, 64>, 32> &display) override {
+    void draw(const std::array<std::array<bool, 64>, 32> display) override {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 

@@ -4,6 +4,9 @@
 #include <memory>
 #include <stack>
 #include <vector>
+
+#include "command.h"
+#include "context.h"
 #include "view.h"
 
 // TODO add font?
@@ -12,7 +15,7 @@ public:
     constexpr static uint16_t ROM_START = 0x200;
 
     explicit Chip8(std::unique_ptr<IView> view) {
-        clear_screen();
+        ClearScreen(context).execute();
         this->view = std::move(view);
     }
 
@@ -41,11 +44,11 @@ public:
 
     uint16_t fetch();
 
+    // std::unique_ptr<Command> decode(uint16_t opcode);
+
     void execute(uint16_t opcode);
 
 private:
-    void clear_screen();
-
     std::unique_ptr<IView> view;
 
     uint8_t memory[4096] = {};
@@ -57,4 +60,5 @@ private:
     std::stack<uint16_t> stack{};
     uint8_t delay_timer = 0;
     uint8_t sound_timer = 0;
+    Context context = Context(display, pc, stack);
 };
