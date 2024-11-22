@@ -61,3 +61,42 @@ private:
     uint16_t nnn;
     uint16_t &pc;
 };
+
+// 0x2NNN
+class Call final : public Command {
+public:
+    Call(uint16_t &pc, const uint16_t nnn,
+         std::stack<uint16_t> &stack) : nnn(nnn),
+                                        pc(pc), stack(stack) {
+    }
+
+    void execute() override {
+        stack.push(pc);
+        pc = nnn;
+    }
+
+private:
+    uint16_t nnn;
+    uint16_t &pc;
+    std::stack<uint16_t> &stack;
+};
+
+// 0x3XNN
+class IsEqual final : public Command {
+public:
+    IsEqual(uint16_t &pc, const uint16_t nn,
+            std::array<uint8_t, 16> &v, uint8_t x) : nn(nn),
+        pc(pc), v(v), x(x) {
+    }
+
+    void execute() override {
+        if (v[x] == nn)
+            pc += 2;
+    }
+
+private:
+    uint16_t nn;
+    uint16_t &pc;
+    std::array<uint8_t, 16> &v;
+    uint8_t x;
+};

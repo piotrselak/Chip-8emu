@@ -50,12 +50,10 @@ void Chip8::execute(const uint16_t opcode) {
             Jump(pc, nnn).execute();
             break;
         case 0x2:
-            stack.push(pc);
-            pc = nnn;
+            Call(pc, nnn, stack).execute();
             break;
         case 0x3:
-            if (v[x] == nn)
-                pc += 2;
+            IsEqual(pc, nn, v, x);
             break;
         case 0x4:
             if (v[x] != nn)
