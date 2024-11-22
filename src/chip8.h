@@ -3,11 +3,10 @@
 #include <cstdint>
 #include <memory>
 #include <stack>
-#include <stdexcept>
 #include <vector>
-
 #include "view.h"
 
+// TODO add font?
 class Chip8 {
 public:
     constexpr static uint16_t ROM_START = 0x200;
@@ -18,16 +17,19 @@ public:
     }
 
     void loop() {
-        auto code = fetch();
-        execute(code);
-        auto last_display = get_display();
-
         while (!view->should_end()) {
-            if (auto new_display = get_display();
-                new_display != last_display)
-                view->draw(new_display);
             const auto opcode = fetch();
+
+            // TODO debug remove
+            // if (!stack.empty())
+            //     std::cout << pc << " " << opcode << " " << stack.top() <<
+            //             std::endl;
+            // else
+            //     std::cout << pc << " " << opcode << std::endl;
+
             execute(opcode);
+            // Cant move to DXYN as raylib relies on drawing for many things
+            view->draw(get_display());
         }
     }
 
@@ -52,7 +54,7 @@ private:
     uint16_t pc = ROM_START;
     uint16_t i = 0;
     std::array<uint8_t, 16> v{};
-    std::stack<uint8_t> stack;
+    std::stack<uint16_t> stack{};
     uint8_t delay_timer = 0;
     uint8_t sound_timer = 0;
 };

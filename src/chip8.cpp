@@ -1,5 +1,7 @@
 #include "chip8.h"
 
+#include <iostream>
+
 void Chip8::load(const std::vector<char> &buffer) {
     if (constexpr size_t MAX_ROM_SIZE = sizeof(memory) - ROM_START;
         buffer.size() > MAX_ROM_SIZE) {
@@ -29,6 +31,12 @@ void Chip8::clear_screen() {
 }
 
 void Chip8::execute(const uint16_t opcode) {
+    //TODO idk might be responsible for bugs
+    // if (opcode == 0x0) {
+    //     pc = ROM_START;
+    //     return;
+    // }
+
     const uint8_t x = opcode >> 8 & 0xF;
     const uint8_t y = opcode >> 4 & 0xF;
     const uint16_t nnn = opcode & 0xFFF;
@@ -39,13 +47,15 @@ void Chip8::execute(const uint16_t opcode) {
     switch (uint8_t first_nible = opcode >> 12) {
         case 0x0:
             if (nnn == 0x0EE) {
+                if (stack.empty())
+                    throw std::runtime_error("Can't pop from empty stack.");
                 pc = stack.top();
                 stack.pop();
             } else if (nnn == 0x0E0)
                 clear_screen();
             break;
         case 0x1:
-            pc = opcode & 0xFFF;
+            pc = nnn;
             break;
         case 0x2:
             stack.push(pc);
@@ -53,14 +63,16 @@ void Chip8::execute(const uint16_t opcode) {
             break;
         case 0x3:
             if (v[x] == nn)
-                i += 2;
+                pc += 2;
             break;
         case 0x4:
             if (v[x] != nn)
-                i += 2;
+                pc += 2;
+            break;
         case 0x5:
             if (v[x] == v[y])
-                i += 2;
+                pc += 2;
+            break;
         case 0x6:
             v[x] = nn;
             break;
@@ -127,10 +139,6 @@ void Chip8::execute(const uint16_t opcode) {
                 }
             }
             break;
-        // TODO
-        case 0xE:
-            break;
-        // TODO
         case 0xF:
             break;
         default:

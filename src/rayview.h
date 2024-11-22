@@ -2,20 +2,19 @@
 #include "raylib.h"
 #include "view.h"
 
-// TODO rethink if needed here?
+
 // Wrapper for all the rendering code
-class RayView : public IView {
+class RayView final : public IView {
 public:
     constexpr static int SCALE = 10;
 
-    RayView(int width, int height) {
+    RayView(const int width, const int height) {
         InitWindow(width * SCALE, height * SCALE, "CHIP-8emu");
-        SetTargetFPS(60);
+        SetTargetFPS(60); // TODO
     }
 
     void draw(const std::array<std::array<bool, 64>, 32> &display) override {
         BeginDrawing();
-        // TODO maybe not clear everything if something didn't change? idk if worth it
         ClearBackground(RAYWHITE);
 
         for (int y = 0; y < 32; y++) {
@@ -36,5 +35,15 @@ public:
 
     ~RayView() override {
         CloseWindow();
+    }
+
+    bool is_key_pressed(const int key) override {
+        return IsKeyPressed(key);
+    }
+
+    int get_key() override {
+        auto val = GetKeyPressed(); // TODO debug only
+        std::cout << val << std::endl;
+        return GetKeyPressed();
     }
 };
