@@ -1,3 +1,6 @@
+build
 cmake-build-debug
 .idea
 tests
+.cache
+.clang-format

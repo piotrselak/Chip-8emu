@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.29)
 project(Chip_8emu)
 
 set(CMAKE_CXX_STANDARD 20)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(RAYLIB_VERSION 5.5)
 find_package(raylib ${RAYLIB_VERSION} QUIET)
 if (NOT raylib_FOUND)

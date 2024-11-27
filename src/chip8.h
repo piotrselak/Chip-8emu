@@ -10,7 +10,7 @@
 
 // TODO add font?
 class Chip8 {
-public:
+  public:
     constexpr static uint16_t ROM_START = 0x200;
 
     explicit Chip8(std::unique_ptr<IView> view) {
@@ -47,7 +47,7 @@ public:
 
     void execute(uint16_t opcode);
 
-private:
+  private:
     std::unique_ptr<IView> view;
 
     uint8_t memory[4096] = {};

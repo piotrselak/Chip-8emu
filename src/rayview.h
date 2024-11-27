@@ -2,10 +2,9 @@
 #include "raylib.h"
 #include "view.h"
 
-
 // Wrapper for all the rendering code
 class RayView final : public IView {
-public:
+  public:
     constexpr static int SCALE = 10;
 
     RayView(const int width, const int height) {
@@ -29,17 +28,11 @@ public:
         EndDrawing();
     }
 
-    bool should_end() override {
-        return WindowShouldClose();
-    }
+    bool should_end() override { return WindowShouldClose(); }
 
-    ~RayView() override {
-        CloseWindow();
-    }
+    ~RayView() override { CloseWindow(); }
 
-    bool is_key_pressed(const int key) override {
-        return IsKeyPressed(key);
-    }
+    bool is_key_pressed(const int key) override { return IsKeyPressed(key); }
 
     int get_key() override {
         auto val = GetKeyPressed(); // TODO debug only
