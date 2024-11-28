@@ -1,8 +1,10 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <stack>
 #include <stdexcept>
+
 class Command {
   public:
     virtual ~Command() = default;
@@ -83,6 +85,44 @@ class IsEqual final : public Command {
 
     void execute() override {
         if (v[x] == nn)
+            pc += 2;
+    }
+
+  private:
+    uint16_t nn;
+    uint16_t &pc;
+    std::array<uint8_t, 16> &v;
+    uint8_t x;
+};
+
+// 0x4XNN
+class IsNotEqual : Command {
+  public:
+    IsNotEqual(uint16_t &pc, const uint16_t nn, std::array<uint8_t, 16> &v,
+               uint8_t x)
+        : nn(nn), pc(pc), v(v), x(x) {}
+
+    void execute() override {
+        if (v[x] != nn)
+            pc += 2;
+    }
+
+  private:
+    uint16_t nn;
+    uint16_t &pc;
+    std::array<uint8_t, 16> &v;
+    uint8_t x;
+};
+
+// 0x5XY0 TODO
+class IsEqualXY : Command {
+  public:
+    IsEqualXY(uint16_t &pc, const uint16_t nn, std::array<uint8_t, 16> &v,
+              uint8_t x)
+        : nn(nn), pc(pc), v(v), x(x) {}
+
+    void execute() override {
+        if (v[x] != nn)
             pc += 2;
     }
 
