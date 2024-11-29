@@ -160,3 +160,104 @@ class AddAssignX : Command {
     std::array<uint8_t, 16> &v;
     uint8_t x;
 };
+
+// TODO remake as separate commands maybe?
+// 0x8XY_
+class BitAndMath : Command {
+  public:
+    BitAndMath(uint8_t n, uint8_t x, uint8_t y, std::array<uint8_t, 16> &v)
+        : n(n), x(x), y(y), v(v) {}
+
+    void execute() override {
+        if (n == 0)
+            v[x] = v[y];
+        else if (n == 1)
+            v[x] |= v[y];
+        else if (n == 2)
+            v[x] &= v[y];
+        else if (n == 3)
+            v[x] ^= v[y];
+        else if (n == 4) {
+            v[0xf] = v[x] > 255 - v[y] ? 1 : 0;
+            v[x] += v[y];
+        } else if (n == 5) {
+            v[0xf] = v[x] > v[y] ? 1 : 0;
+            v[x] -= v[y];
+        } else if (n == 6) {
+            v[0xf] = v[x] & 0x1;
+            v[x] >>= 1;
+        } else if (n == 7) {
+            v[0xf] = v[y] > v[x] ? 1 : 0;
+            v[x] = v[y] - v[x];
+        } else if (n == 0xE) {
+            v[0xf] = v[x] >> 7;
+            v[x] <<= 1;
+        }
+    }
+
+  private:
+    uint8_t n;
+    std::array<uint8_t, 16> &v;
+    uint8_t x;
+    uint8_t y;
+};
+
+// 9xXY0
+class IsNotEqualXY : Command {
+  public:
+    IsNotEqualXY(uint8_t x, uint8_t y, uint16_t &pc, std::array<uint8_t, 16> &v)
+        : x(x), y(x), pc(pc), v(v) {}
+
+    void execute() override {
+        if (v[x] != v[y])
+            pc += 2;
+    }
+
+  private:
+    std::array<uint8_t, 16> &v;
+    uint8_t x;
+    uint8_t y;
+    uint16_t &pc;
+};
+
+// 0xANNN
+class SetI : Command {
+  public:
+    SetI(uint16_t nnn, uint16_t &i, uint16_t opcode)
+        : nnn(nnn), i(i), opcode(opcode) {}
+
+    void execute() override { i = opcode & 0xFFF; }
+
+  private:
+    uint16_t nnn;
+    uint16_t &i;
+    uint16_t opcode;
+};
+
+// 0xBNNN
+class JumpPlus : Command {
+  public:
+    JumpPlus(uint16_t nnn, uint16_t &pc, std::array<uint8_t, 16> &v)
+        : nnn(nnn), pc(pc), v(v) {}
+    void execute() override { pc = v[0] + nnn; }
+
+  private:
+    uint16_t nnn;
+    uint16_t &pc;
+    std::array<uint8_t, 16> &v;
+};
+
+// ---- FX__ ------
+
+// FX07
+class GetDelay : Command {
+  public:
+    GetDelay(uint8_t x, uint8_t &delay_timer, std::array<uint8_t, 16> &v)
+        : x(x), delay_timer(delay_timer), v(v) {}
+    void execute() override { v[x] = delay_timer; }
+
+  private:
+    uint8_t x;
+    uint8_t &delay_timer;
+    std::array<uint8_t, 16> &v;
+};
