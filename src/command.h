@@ -114,21 +114,49 @@ class IsNotEqual : Command {
     uint8_t x;
 };
 
-// 0x5XY0 TODO
+// 0x5XY0
 class IsEqualXY : Command {
   public:
-    IsEqualXY(uint16_t &pc, const uint16_t nn, std::array<uint8_t, 16> &v,
+    IsEqualXY(uint16_t &pc, const uint8_t y, std::array<uint8_t, 16> &v,
               uint8_t x)
-        : nn(nn), pc(pc), v(v), x(x) {}
+        : y(y), pc(pc), v(v), x(x) {}
 
     void execute() override {
-        if (v[x] != nn)
+        if (v[x] == v[y])
             pc += 2;
     }
 
   private:
-    uint16_t nn;
     uint16_t &pc;
+    std::array<uint8_t, 16> &v;
+    uint8_t x;
+    uint8_t y;
+};
+
+// 0x6XNN
+class AssignX : Command {
+  public:
+    AssignX(const uint16_t nn, std::array<uint8_t, 16> &v, uint8_t x)
+        : nn(nn), v(v), x(x) {}
+
+    void execute() override { v[x] = nn; }
+
+  private:
+    uint16_t nn;
+    std::array<uint8_t, 16> &v;
+    uint8_t x;
+};
+
+// 0x7XNN
+class AddAssignX : Command {
+  public:
+    AddAssignX(const uint16_t nn, std::array<uint8_t, 16> &v, uint8_t x)
+        : nn(nn), v(v), x(x) {}
+
+    void execute() override { v[x] += nn; }
+
+  private:
+    uint16_t nn;
     std::array<uint8_t, 16> &v;
     uint8_t x;
 };

@@ -15,7 +15,7 @@ class RayView final : public IView {
     void draw(const std::array<std::array<bool, 64>, 32> display) override {
         BeginDrawing();
         ClearBackground(RAYWHITE);
-
+	
         for (int y = 0; y < 32; y++) {
             for (int x = 0; x < 64; x++) {
                 if (display[y][x]) {
@@ -36,7 +36,6 @@ class RayView final : public IView {
 
     int get_key() override {
         auto val = GetKeyPressed(); // TODO debug only
-        std::cout << val << std::endl;
         return GetKeyPressed();
     }
 };

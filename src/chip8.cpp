@@ -58,14 +58,13 @@ void Chip8::execute(const uint16_t opcode) {
         IsNotEqual(pc, nn, v, x).execute();
         break;
     case 0x5:
-        if (v[x] == v[y])
-            pc += 2;
-        break;
+        IsEqualXY(pc, y, v, x).execute();
+	break;
     case 0x6:
-        v[x] = nn;
-        break;
+        AssignX(nn, v, x).execute();
+	break;
     case 0x7:
-        v[x] += nn;
+	AddAssignX(nn, v, x).execute();
         break;
     case 0x8: // TODO use something to make it nicer than ifs ladder
         if (n == 0)
