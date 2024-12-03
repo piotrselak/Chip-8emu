@@ -247,9 +247,64 @@ class JumpPlus : Command {
     std::array<uint8_t, 16> &v;
 };
 
+// 0xCXNN
+class Rand : Command {
+  public:
+    Rand(uint8_t nn, uint8_t x, std::array<uint8_t, 16> &v)
+        : nn(nn), x(x), v(v) {}
+    void execute() override {
+        // TODO think about changing to random from std lib
+        v[x] = rand() & nn;
+    }
+
+  private:
+    uint8_t nn;
+    uint8_t x;
+    std::array<uint8_t, 16> &v;
+};
+
+// 0xDXYN
+class Draw : Command {
+  public:
+    Draw(uint16_t &i, uint8_t (&memory)[],
+         std::array<std::array<bool, 64>, 32> &display, uint8_t x, uint8_t y,
+         uint8_t n, std::array<uint8_t, 16> &v)
+        : i(i), memory(memory), display(display), x(x), y(y), n(n), v(v) {}
+
+    void execute() override {
+        // TODO FIX AND TIDY MOVE
+        v[0xf] = 0;
+        // T ODO xors and stop when out of bounds?
+        for (auto nth = 0; nth < n; nth++) {
+            const auto sprite_byte = memory[i + nth];
+            for (int xline = 0; xline < 8; xline++) {
+                const auto curr_pixel = sprite_byte >> (7 - xline) & 0x1;
+                const auto x_cord = v[x] % 64 + xline;
+                const auto y_cord = v[y] % 32 + nth;
+
+                if (curr_pixel & display[y_cord][x_cord]) {
+                    v[0xf] = true;
+                    display[y_cord][x_cord] = false;
+                } else if (curr_pixel) {
+                    display[y_cord][x_cord] = true;
+                }
+            }
+        }
+    }
+
+  private:
+    uint8_t (&memory)[];
+    std::array<std::array<bool, 64>, 32> &display;
+    uint8_t x;
+    uint8_t y;
+    uint8_t n;
+    uint16_t &i;
+    std::array<uint8_t, 16> &v;
+};
+
 // ---- FX__ ------
 
-// FX07
+// 0xFX07
 class GetDelay : Command {
   public:
     GetDelay(uint8_t x, uint8_t &delay_timer, std::array<uint8_t, 16> &v)
@@ -259,5 +314,85 @@ class GetDelay : Command {
   private:
     uint8_t x;
     uint8_t &delay_timer;
+    std::array<uint8_t, 16> &v;
+};
+
+// 0xFX1E
+class AddVxToI : Command {
+  public:
+    AddVxToI(std::array<uint8_t, 16> &v, uint16_t &i, uint8_t x)
+        : v(v), i(i), x(x) {}
+
+    void execute() override { i += v[x]; }
+
+  private:
+    std::array<uint8_t, 16> &v;
+    uint16_t &i;
+    uint8_t x;
+};
+
+// 0xFX33
+class SetBCD : Command {
+  public:
+    SetBCD(uint8_t x, uint16_t &i, uint8_t (&memory)[],
+           std::array<uint8_t, 16> &v)
+        : x(x), i(i), memory(memory), v(v) {}
+
+    void execute() override {
+        // TODO what if error
+        memory[i] = v[x] / 100;
+        memory[i + 1] = v[x] % 100 / 10;
+        memory[i + 2] = v[x] % 10;
+    }
+
+  private:
+    uint8_t x;
+    uint16_t &i;
+    uint8_t (&memory)[];
+
+    std::array<uint8_t, 16> &v;
+};
+
+// 0xFX55
+class RegDump : Command {
+  public:
+    RegDump(uint8_t x, uint16_t &i, uint8_t (&memory)[],
+            std::array<uint8_t, 16> &v)
+        : x(x), i(i), memory(memory), v(v) {}
+
+    void execute() override {
+        // TODO what if error happens?
+        for (int offset = 0; offset <= x; offset++) {
+            memory[i + offset] = v[offset];
+        }
+    }
+
+  private:
+    uint8_t x;
+    uint16_t &i;
+    uint8_t (&memory)[];
+
+    std::array<uint8_t, 16> &v;
+};
+
+// 0xFX65
+class RegLoad : Command {
+  public:
+    RegLoad(uint8_t x, uint16_t &i, uint8_t (&memory)[],
+            std::array<uint8_t, 16> &v)
+        : x(x), i(i), memory(memory), v(v) {}
+
+    void execute() override {
+        // TODO what if error
+        for (int offset = 0; offset <= x; offset++) {
+            v[offset] = memory[i + offset];
+        }
+    }
+
+  private:
+    uint8_t x;
+    uint16_t &i;
+    uint8_t (&memory)[];
+
     std::array<uint8_t, 16> &v;
 };

@@ -79,32 +79,24 @@ void Chip8::execute(const uint16_t opcode) {
         JumpPlus(nnn, pc, v).execute();
         break;
     case 0xC:
-        // TODO think about changing to random from std lib
-        // v[x] = rand() & nn; // NOLINT(cert-msc30-c, cert-msc50-cpp)
+        Rand(nn, x, v).execute();
         break;
     case 0xD:
-        // TODO FIX AND TIDY MOVE
-        v[0xf] = 0;
-        // T ODO xors and stop when out of bounds?
-        for (auto nth = 0; nth < n; nth++) {
-            const auto sprite_byte = memory[i + nth];
-            for (int xline = 0; xline < 8; xline++) {
-                const auto curr_pixel = sprite_byte >> (7 - xline) & 0x1;
-                const auto x_cord = v[x] % 64 + xline;
-                const auto y_cord = v[y] % 32 + nth;
-
-                if (curr_pixel & display[y_cord][x_cord]) {
-                    v[0xf] = true;
-                    display[y_cord][x_cord] = false;
-                } else if (curr_pixel) {
-                    display[y_cord][x_cord] = true;
-                }
-            }
-        }
+        Draw(i, memory, display, x, y, n, v).execute();
+        break;
+    case 0xE: // TODO
         break;
     case 0xF:
         if (y == 0x0 && n == 0xA)
             GetDelay(x, delay_timer, v).execute();
+        if (y == 0x1 && n == 0xE)
+            AddVxToI(v, i, x).execute();
+        if (y == 0x3 && n == 0x3)
+            SetBCD(x, i, memory, v).execute();
+        if (y == 0x5 && n == 0x5)
+            RegDump(x, i, memory, v).execute();
+        if (y == 0x6 && n == 0x5)
+            RegLoad(x, i, memory, v).execute();
         break;
     default:
         throw std::runtime_error("Unknown opcode.");
