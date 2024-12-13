@@ -1,5 +1,7 @@
 #include "chip8.h"
 #include "command.h"
+#include "raylib.h"
+#include <cstdint>
 
 void Chip8::load(const std::vector<char> &buffer) {
     if (constexpr size_t MAX_ROM_SIZE = sizeof(memory) - ROM_START;
@@ -84,11 +86,23 @@ void Chip8::execute(const uint16_t opcode) {
     case 0xD:
         Draw(i, memory, display, x, y, n, v).execute();
         break;
-    case 0xE: // TODO
+    case 0xE: {
+        auto keypad_key = view->get_key();
+        if (nn == 0x9E) {
+            IsDown(v, x, pc, keypad_key).execute();
+        } else if (nn == 0xA1) {
+            IsNotDown(v, x, pc, keypad_key).execute();
+        }
         break;
-    case 0xF:
-        if (y == 0x0 && n == 0xA)
+    }
+    case 0xF: // TODO refactor to else ifs
+        if (y == 0x0 && n == 0x7)
             GetDelay(x, delay_timer, v).execute();
+        else if (nn == 0x0A) {
+            std::cout << "Here2" << std::endl;
+            auto key = 0; // TODO await_keypad_key();
+            AwaitKeyPress(x, v, key).execute();
+        }
         if (y == 0x1 && n == 0xE)
             AddVxToI(v, i, x).execute();
         if (y == 0x3 && n == 0x3)

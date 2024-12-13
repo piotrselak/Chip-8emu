@@ -1,6 +1,8 @@
 #pragma once
 #include "raylib.h"
 #include "view.h"
+#include <cstdint>
+#include <iostream>
 
 // Wrapper for all the rendering code
 class RayView final : public IView {
@@ -15,7 +17,7 @@ class RayView final : public IView {
     void draw(const std::array<std::array<bool, 64>, 32> display) override {
         BeginDrawing();
         ClearBackground(RAYWHITE);
-	
+
         for (int y = 0; y < 32; y++) {
             for (int x = 0; x < 64; x++) {
                 if (display[y][x]) {
@@ -28,14 +30,17 @@ class RayView final : public IView {
         EndDrawing();
     }
 
+    float get_delta_time() { return GetFrameTime(); }
+
     bool should_end() override { return WindowShouldClose(); }
 
     ~RayView() override { CloseWindow(); }
 
-    bool is_key_pressed(const int key) override { return IsKeyPressed(key); }
+    uint8_t get_key() override {
+        if (IsKeyDown(49))
+            return 1;
 
-    int get_key() override {
-        auto val = GetKeyPressed(); // TODO debug only
-        return GetKeyPressed();
+        // not used in any app value
+        return 255;
     }
 };

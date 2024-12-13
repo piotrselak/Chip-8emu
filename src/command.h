@@ -302,6 +302,40 @@ class Draw : Command {
     std::array<uint8_t, 16> &v;
 };
 
+// 0xEX9E
+class IsDown : Command {
+  public:
+    IsDown(std::array<uint8_t, 16> &v, uint8_t x, uint16_t &pc, uint8_t key)
+        : v(v), x(x), pc(pc), key(key) {}
+    void execute() override {
+        if (key == v[x])
+            pc += 2;
+    }
+
+  private:
+    std::array<uint8_t, 16> &v;
+    uint8_t x;
+    uint16_t &pc;
+    uint8_t key;
+};
+
+// 0xEXA1
+class IsNotDown : Command {
+  public:
+    IsNotDown(std::array<uint8_t, 16> &v, uint8_t x, uint16_t &pc, uint8_t key)
+        : v(v), x(x), pc(pc), key(key) {}
+    void execute() override {
+        if (key != v[x])
+            pc += 2;
+    }
+
+  private:
+    std::array<uint8_t, 16> &v;
+    uint8_t x;
+    uint16_t &pc;
+    uint8_t key;
+};
+
 // ---- FX__ ------
 
 // 0xFX07
@@ -315,6 +349,20 @@ class GetDelay : Command {
     uint8_t x;
     uint8_t &delay_timer;
     std::array<uint8_t, 16> &v;
+};
+
+// 0xFX0A
+class AwaitKeyPress : Command {
+  public:
+    AwaitKeyPress(uint8_t x, std::array<uint8_t, 16> &v, uint8_t key)
+        : x(x), v(v), key(key) {}
+
+    void execute() override { v[x] = key; }
+
+  private:
+    uint8_t x;
+    std::array<uint8_t, 16> &v;
+    uint8_t key;
 };
 
 // 0xFX1E

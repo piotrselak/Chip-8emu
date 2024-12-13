@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <cstdint>
+#include <iostream>
 #include <memory>
 #include <stack>
 #include <vector>
@@ -19,17 +20,19 @@ class Chip8 {
     }
 
     void loop() {
+        const int CPU_HZ = 700; // Instruction cycles per second
+        const float CPU_CYCLE_TIME = 1.0f / CPU_HZ;
+        float cpuAccumulator = 0.0f;
+
         while (!view->should_end()) {
-            const auto opcode = fetch();
+            float deltaTime = view->get_delta_time();
+            cpuAccumulator += deltaTime;
 
-            // TODO debug remove
-            // if (!stack.empty())
-            //     std::cout << pc << " " << opcode << " " << stack.top() <<
-            //             std::endl;
-            // else
-            //     std::cout << pc << " " << opcode << std::endl;
-
-            execute(opcode);
+            while (cpuAccumulator >= CPU_CYCLE_TIME) {
+                const auto opcode = fetch();
+                execute(opcode);
+                cpuAccumulator -= CPU_CYCLE_TIME;
+            }
             // Cant move to DXYN as raylib relies on drawing for many things
             view->draw(get_display());
         }
